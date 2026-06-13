@@ -20,10 +20,10 @@ export function WelcomeScreen({ navigation }: Props) {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.header}>
-        <Logo size={64} />
-        <Text style={styles.title}>Welcome to{'\n'}Adaptive Learn</Text>
+        <Logo size={264} />
+        {/* <Text style={styles.title}>Welcome to{'\n'}EduStream</Text> */}
         <Text style={styles.subtitle}>
-          An e-learning platform that adapts to your connection so you never miss a lesson.
+          LEARN WITHOUT LIMITS
         </Text>
       </View>
 

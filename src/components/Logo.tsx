@@ -1,24 +1,31 @@
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { colors } from '../theme/colors';
-import { radius } from '../theme/typography';
+import { Image, StyleSheet, View } from 'react-native';
 
 interface LogoProps {
   size?: number;
-  background?: string;
-  iconColor?: string;
 }
 
-export function Logo({ size = 72, background = colors.navy, iconColor = colors.white }: LogoProps) {
+export function Logo({ size = 72 }: LogoProps) {
   return (
     <View
       style={[
         styles.logo,
-        { width: size, height: size, borderRadius: size * 0.28, backgroundColor: background },
+        {
+          width: size,
+          height: size,
+          borderRadius: size * 0.28,
+        },
       ]}
     >
-      <Ionicons name="school" size={size * 0.5} color={iconColor} />
+      <Image
+        source={require('../../assets/logo.jpeg')} 
+        style={{
+          width: size,
+          height: size,
+          borderRadius: size * 0.28,
+        }}
+        resizeMode="contain"
+      />
     </View>
   );
 }
@@ -27,6 +34,6 @@ const styles = StyleSheet.create({
   logo: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: radius.lg,
+    overflow: 'hidden', // Ensures rounded corners are applied to the image
   },
 });

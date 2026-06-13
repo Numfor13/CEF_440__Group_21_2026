@@ -1,152 +1,172 @@
 import { Ionicons } from '@expo/vector-icons';
-import { CommonActions } from '@react-navigation/native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
-import { StyleSheet, Switch, Text, View } from 'react-native';
-import { AppButton, Card, Screen, StatTile } from '../../components';
-import { colors } from '../../theme/colors';
-import { radius, spacing } from '../../theme/typography';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Screen, SectionHeader } from '../../components';
+import { courses } from '../../data/mock';
 import { RootStackParamList, StudentTabParamList } from '../../navigation/types';
+import { colors } from '../../theme/colors';
+import { radius, shadow, spacing } from '../../theme/typography';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<StudentTabParamList, 'Profile'>,
   NativeStackScreenProps<RootStackParamList>
 >;
 
+const stats = [
+  { label: 'Courses',    value: '3'   },
+  { label: 'Completed',  value: '1'   },
+  { label: 'Downloads',  value: '4'   },
+  { label: 'Streak',     value: '7d'  },
+];
+
+const infoRows: Array<{ icon: keyof typeof Ionicons.glyphMap; label: string; value: string }> = [
+  { icon: 'person-outline',     label: 'Full Name',  value: 'Precious Nkeng'           },
+  { icon: 'school-outline',     label: 'Program',    value: 'Computer Engineering'     },
+  { icon: 'mail-outline',       label: 'Email',      value: 'student@edustream.com'    },
+  { icon: 'location-outline',   label: 'Campus',     value: 'University of Buea'       },
+  { icon: 'checkmark-circle-outline', label: 'Status', value: 'Active Learner'         },
+];
+
 export function ProfileScreen({ navigation }: Props) {
-  const [dataSaver, setDataSaver] = React.useState(true);
-  const [downloadWifi, setDownloadWifi] = React.useState(true);
-  const [notifications, setNotifications] = React.useState(false);
-
-  const logout = () => {
-    navigation.dispatch(
-      CommonActions.reset({ index: 0, routes: [{ name: 'Welcome' }] }),
-    );
-  };
-
   return (
     <Screen>
-      <View style={styles.header}>
-        <View style={styles.avatar}>
+      {/* Avatar & name */}
+      <View style={styles.heroSection}>
+        <View style={styles.avatarCircle}>
           <Text style={styles.avatarText}>PN</Text>
         </View>
-        <Text style={styles.name}>Precious Numfor</Text>
-        <Text style={styles.email}>numforprecious7@gmail.com</Text>
-        <View style={styles.roleBadge}>
-          <Ionicons name="book-outline" size={13} color={colors.navy} />
-          <Text style={styles.roleText}>Student</Text>
+        <Text style={styles.name}>Precious Nkeng</Text>
+        <Text style={styles.role}>Computer Engineering · Year 4</Text>
+        <View style={styles.activeBadge}>
+          <View style={styles.activeDot} />
+          <Text style={styles.activeText}>Active Learner</Text>
         </View>
       </View>
 
-      <View style={styles.stats}>
-        <StatTile icon="book-outline" value="3" label="Courses" />
-        <View style={{ width: spacing.md }} />
-        <StatTile icon="trophy-outline" value="12" label="Completed" tint={colors.good} tintSoft={colors.goodSoft} />
-        <View style={{ width: spacing.md }} />
-        <StatTile icon="time-outline" value="48h" label="Learning" tint={colors.moderate} tintSoft={colors.moderateSoft} />
+      {/* Stats row */}
+      <View style={styles.statsRow}>
+        {stats.map((s) => (
+          <View key={s.label} style={styles.statItem}>
+            <Text style={styles.statValue}>{s.value}</Text>
+            <Text style={styles.statLabel}>{s.label}</Text>
+          </View>
+        ))}
       </View>
 
-      <Text style={styles.sectionTitle}>Preferences</Text>
-      <Card>
-        <Preference
-          icon="cellular-outline"
-          title="Data saver"
-          subtitle="Prefer audio/text on poor networks"
-          value={dataSaver}
-          onValueChange={setDataSaver}
-        />
-        <Preference
-          icon="wifi-outline"
-          title="Download on Wi-Fi only"
-          subtitle="Avoid mobile data for downloads"
-          value={downloadWifi}
-          onValueChange={setDownloadWifi}
-          border
-        />
-        <Preference
-          icon="notifications-outline"
-          title="Notifications"
-          subtitle="Deadlines and new content"
-          value={notifications}
-          onValueChange={setNotifications}
-          border
-        />
-      </Card>
+      {/* Info */}
+      <SectionHeader title="Profile information" />
+      <View style={styles.infoCard}>
+        {infoRows.map((row, i) => (
+          <View key={row.label} style={[styles.infoRow, i < infoRows.length - 1 && styles.infoBorder]}>
+            <View style={styles.infoIcon}>
+              <Ionicons name={row.icon} size={16} color={colors.navy} />
+            </View>
+            <View>
+              <Text style={styles.infoLabel}>{row.label}</Text>
+              <Text style={styles.infoValue}>{row.value}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
 
-      <Text style={styles.sectionTitle}>Account</Text>
-      <Card>
-        <Row icon="person-outline" label="Personal information" />
-        <Row icon="language-outline" label="Language · English" border />
-        <Row icon="help-circle-outline" label="Help & support" border />
-      </Card>
+      {/* Enrolled courses */}
+      <SectionHeader title="Enrolled courses" actionLabel="See all" onAction={() => navigation.navigate('Courses')} />
+      {courses.map((c) => (
+        <Pressable
+          key={c.id}
+          style={styles.courseRow}
+          onPress={() => navigation.navigate('CourseDetails', { courseId: c.id })}
+        >
+          <View style={[styles.courseThumb, { backgroundColor: c.color }]}>
+            <Ionicons name="book" size={16} color={colors.white} />
+          </View>
+          <View style={styles.courseInfo}>
+            <Text style={styles.courseTitle} numberOfLines={1}>{c.title}</Text>
+            <Text style={styles.courseMeta}>{c.instructor}</Text>
+            <View style={styles.progressTrack}>
+              <View style={[styles.progressFill, { width: `${c.progress * 100}%` as any }]} />
+            </View>
+          </View>
+          <Text style={styles.progressPct}>{Math.round(c.progress * 100)}%</Text>
+        </Pressable>
+      ))}
 
-      <AppButton label="Log out" icon="log-out-outline" variant="outline" onPress={logout} style={{ marginTop: spacing.xl }} />
+      {/* Settings shortcut */}
+      <Pressable
+        style={styles.settingsBtn}
+        onPress={() => navigation.navigate('Settings' as any)}
+      >
+        <Ionicons name="settings-outline" size={18} color={colors.navy} />
+        <Text style={styles.settingsBtnText}>Account Settings</Text>
+        <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+      </Pressable>
     </Screen>
   );
 }
 
-function Preference({
-  icon,
-  title,
-  subtitle,
-  value,
-  onValueChange,
-  border,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  title: string;
-  subtitle: string;
-  value: boolean;
-  onValueChange: (v: boolean) => void;
-  border?: boolean;
-}) {
-  return (
-    <View style={[styles.prefRow, border && styles.border]}>
-      <View style={styles.prefIcon}>
-        <Ionicons name={icon} size={18} color={colors.navy} />
-      </View>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.prefTitle}>{title}</Text>
-        <Text style={styles.prefSub}>{subtitle}</Text>
-      </View>
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        trackColor={{ true: colors.navy, false: colors.border }}
-        thumbColor={colors.white}
-      />
-    </View>
-  );
-}
-
-function Row({ icon, label, border }: { icon: keyof typeof Ionicons.glyphMap; label: string; border?: boolean }) {
-  return (
-    <View style={[styles.prefRow, border && styles.border]}>
-      <View style={styles.prefIcon}>
-        <Ionicons name={icon} size={18} color={colors.navy} />
-      </View>
-      <Text style={styles.rowLabel}>{label}</Text>
-      <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  header: { alignItems: 'center', marginTop: spacing.md },
-  avatar: { width: 84, height: 84, borderRadius: 42, backgroundColor: colors.navy, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { color: colors.white, fontSize: 28, fontWeight: '800' },
-  name: { fontSize: 20, fontWeight: '800', color: colors.text, marginTop: spacing.md },
-  email: { fontSize: 13, color: colors.textMuted, marginTop: 2 },
-  roleBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surfaceAlt, paddingHorizontal: spacing.md, paddingVertical: 6, borderRadius: radius.pill, marginTop: spacing.md },
-  roleText: { fontSize: 12, fontWeight: '700', color: colors.navy, marginLeft: 5 },
-  stats: { flexDirection: 'row', marginTop: spacing.xl },
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.text, marginTop: spacing.xl, marginBottom: spacing.md },
-  prefRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.md },
-  border: { borderTopWidth: 1, borderTopColor: colors.border },
-  prefIcon: { width: 38, height: 38, borderRadius: radius.md, backgroundColor: colors.surfaceAlt, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
-  prefTitle: { fontSize: 14, fontWeight: '700', color: colors.text },
-  prefSub: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
-  rowLabel: { flex: 1, fontSize: 14, fontWeight: '600', color: colors.text },
+  heroSection: { alignItems: 'center', paddingVertical: spacing.xl },
+  avatarCircle: {
+    width: 80, height: 80, borderRadius: 40,
+    backgroundColor: colors.navy, alignItems: 'center',
+    justifyContent: 'center', marginBottom: spacing.md,
+  },
+  avatarText: { color: colors.white, fontWeight: '800', fontSize: 28 },
+  name: { fontSize: 22, fontWeight: '800', color: colors.text },
+  role: { fontSize: 13, color: colors.textMuted, marginTop: 4 },
+  activeBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: colors.goodSoft, paddingHorizontal: spacing.md,
+    paddingVertical: 4, borderRadius: radius.pill, marginTop: spacing.sm,
+  },
+  activeDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.good },
+  activeText: { fontSize: 12, fontWeight: '700', color: colors.good },
+
+  statsRow: {
+    flexDirection: 'row', backgroundColor: colors.surface,
+    borderRadius: radius.md, ...shadow, marginBottom: spacing.lg,
+  },
+  statItem: { flex: 1, alignItems: 'center', paddingVertical: spacing.lg },
+  statValue: { fontSize: 20, fontWeight: '800', color: colors.text },
+  statLabel: { fontSize: 11, color: colors.textMuted, marginTop: 2 },
+
+  infoCard: {
+    backgroundColor: colors.surface, borderRadius: radius.md,
+    marginBottom: spacing.lg, ...shadow,
+  },
+  infoRow: { flexDirection: 'row', alignItems: 'center', padding: spacing.md },
+  infoBorder: { borderBottomWidth: 1, borderBottomColor: colors.border },
+  infoIcon: {
+    width: 34, height: 34, borderRadius: radius.sm,
+    backgroundColor: colors.surfaceAlt, alignItems: 'center',
+    justifyContent: 'center', marginRight: spacing.md,
+  },
+  infoLabel: { fontSize: 11, color: colors.textMuted, fontWeight: '600' },
+  infoValue: { fontSize: 14, fontWeight: '600', color: colors.text, marginTop: 1 },
+
+  courseRow: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: colors.surface, borderRadius: radius.md,
+    padding: spacing.md, marginBottom: spacing.sm, ...shadow,
+  },
+  courseThumb: {
+    width: 42, height: 42, borderRadius: radius.sm,
+    alignItems: 'center', justifyContent: 'center', marginRight: spacing.md,
+  },
+  courseInfo: { flex: 1 },
+  courseTitle: { fontSize: 14, fontWeight: '700', color: colors.text },
+  courseMeta: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
+  progressTrack: { height: 4, backgroundColor: colors.border, borderRadius: 2, marginTop: 6 },
+  progressFill: { height: 4, backgroundColor: colors.navy, borderRadius: 2 },
+  progressPct: { fontSize: 13, fontWeight: '700', color: colors.navy, marginLeft: spacing.md },
+
+  settingsBtn: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: colors.surface, borderRadius: radius.md,
+    padding: spacing.md, ...shadow, gap: spacing.md, marginTop: spacing.sm,
+  },
+  settingsBtnText: { flex: 1, fontSize: 15, fontWeight: '600', color: colors.navy },
 });

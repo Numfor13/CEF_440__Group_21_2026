@@ -26,4 +26,9 @@ export type RootStackParamList = {
   QoEMonitoring: undefined;
   CreateCourse: undefined;
   UploadContent: undefined;
+  Assignments: undefined;
+  LiveClasses: undefined;
+  Calendar: undefined;
+  Messages: undefined;
+  Settings: undefined;
 };
