@@ -4,6 +4,9 @@ import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 're
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../../theme/colors';
 import { radius, shadow, spacing } from '../../theme/typography';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigation/types';
+
 
 type SettingRow = {
   id: string;
@@ -18,6 +21,9 @@ type Section = {
   title: string;
   items: SettingRow[];
 };
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
+
 
 const sections: Section[] = [
   {
@@ -47,7 +53,7 @@ const sections: Section[] = [
   },
 ];
 
-export function SettingsScreen() {
+export function SettingsScreen({ navigation }: Props) {
   const initialToggles: Record<string, boolean> = {};
   sections.forEach((s) =>
     s.items.forEach((item) => {
@@ -74,12 +80,17 @@ export function SettingsScreen() {
             <Text style={styles.sectionTitle}>{section.title}</Text>
             <View style={styles.sectionCard}>
               {section.items.map((item, i) => (
-                <Pressable
-                  key={item.id}
-                  style={[styles.row, i < section.items.length - 1 && styles.rowBorder]}
-                  onPress={() => item.type === 'nav' && handleNav(item.label)}
-                  disabled={item.type !== 'nav'}
-                >
+                  <Pressable
+                    style={styles.signOutBtn}
+                    onPress={() => Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+                      { text: 'Cancel', style: 'cancel' },
+                      {
+                        text: 'Sign Out',
+                        style: 'destructive',
+                        onPress: () => navigation.reset({ index: 0, routes: [{ name: 'Welcome' }] }),
+                      },
+                    ])}
+                  >
                   <View style={styles.rowLeft}>
                     <View style={styles.iconWrap}>
                       <Ionicons name={item.icon} size={18} color={colors.navy} />

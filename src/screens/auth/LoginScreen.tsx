@@ -13,16 +13,14 @@ import { RootStackParamList } from '../../navigation/types';
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 export function LoginScreen({ navigation }: Props) {
-  const [role, setRole] = useState<Role>('student');
+  const [role, setRole] = useState<'student' | 'instructor' | 'admin'>('student');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const onLogin = () => {
-    if (role === 'student') {
-      navigation.reset({ index: 0, routes: [{ name: 'StudentTabs' }] });
-    } else {
-      navigation.reset({ index: 0, routes: [{ name: 'InstructorTabs' }] });
-    }
+    if (role === 'student')    navigation.reset({ index: 0, routes: [{ name: 'StudentTabs' }] });
+    else if (role === 'admin') navigation.reset({ index: 0, routes: [{ name: 'AdminTabs' }] });
+    else                       navigation.reset({ index: 0, routes: [{ name: 'InstructorTabs' }] });
   };
 
   return (
@@ -34,7 +32,7 @@ export function LoginScreen({ navigation }: Props) {
           </Pressable>
 
           <View style={styles.head}>
-            <Logo size={56} />
+            <Logo size={200} />
             <Text style={styles.title}>Welcome back</Text>
             <Text style={styles.subtitle}>Sign in to continue learning</Text>
           </View>

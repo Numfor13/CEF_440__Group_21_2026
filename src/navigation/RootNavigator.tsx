@@ -18,6 +18,8 @@ import { SettingsScreen } from '../screens/student/SettingsScreen';
 import { InstructorTabs } from './InstructorTabs';
 import { StudentTabs } from './StudentTabs';
 import { RootStackParamList } from './types';
+import { AdminTabs } from './AdminTabs'; 
+import { AdminProfileScreen } from '../screens/admin/AdminProfileScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -47,6 +49,10 @@ export function RootNavigator() {
       {/* Instructor stack screens */}
       <Stack.Screen name="CreateCourse"   component={CreateCourseScreen} />
       <Stack.Screen name="UploadContent"  component={UploadContentScreen} />
+
+      {/* Admin stack screens */}
+      <Stack.Screen name="AdminTabs" component={AdminTabs} />
+      <Stack.Screen name="AdminProfile" component={AdminProfileScreen} />
     </Stack.Navigator>
   );
 }

@@ -1,4 +1,4 @@
-export type Role = 'student' | 'instructor';
+export type Role = 'student' | 'instructor'| 'admin';
 
 export type DeliveryMode = 'video-hd' | 'video-sd' | 'audio' | 'text';
 

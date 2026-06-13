@@ -21,6 +21,7 @@ export type RootStackParamList = {
   Register: undefined;
   StudentTabs: NavigatorScreenParams<StudentTabParamList>;
   InstructorTabs: NavigatorScreenParams<InstructorTabParamList>;
+  AdminTabs: NavigatorScreenParams<AdminTabParamList>;
   CourseDetails: { courseId: string };
   Learning: { courseId: string };
   QoEMonitoring: undefined;
@@ -31,4 +32,12 @@ export type RootStackParamList = {
   Calendar: undefined;
   Messages: undefined;
   Settings: undefined;
+  AdminProfile: undefined;
+};
+export type AdminTabParamList = {
+  AdminHome: undefined;
+  Users: undefined;
+  Health: undefined;
+  Analytics: undefined;
+  Courses: undefined;
 };

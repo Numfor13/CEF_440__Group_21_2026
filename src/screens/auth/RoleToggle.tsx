@@ -17,6 +17,7 @@ export function RoleToggle({ role, onChange }: RoleToggleProps) {
       <View style={styles.toggle}>
         <Option label="Student" icon="book-outline" active={role === 'student'} onPress={() => onChange('student')} />
         <Option label="Instructor" icon="easel-outline" active={role === 'instructor'} onPress={() => onChange('instructor')} />
+        <Option label="Admin" icon="easel-outline" active={role === 'admin'} onPress={() => onChange('admin')} />
       </View>
     </View>
   );
