@@ -1,12 +1,19 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { supabase } from '../../../task 6/backend-implementation/supabase';
+
 import { colors } from '../../theme/colors';
 import { radius, shadow, spacing } from '../../theme/typography';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../navigation/types';
-
 
 type SettingRow = {
   id: string;
@@ -21,9 +28,6 @@ type Section = {
   title: string;
   items: SettingRow[];
 };
-
-type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
-
 
 const sections: Section[] = [
   {
@@ -53,18 +57,39 @@ const sections: Section[] = [
   },
 ];
 
-export function SettingsScreen({ navigation }: Props) {
+export function SettingsScreen() {
   const initialToggles: Record<string, boolean> = {};
-  sections.forEach((s) =>
-    s.items.forEach((item) => {
-      if (item.type === 'toggle') initialToggles[item.id] = item.defaultOn ?? false;
-    }),
-  );
+
+  sections.forEach(section => {
+    section.items.forEach(item => {
+      if (item.type === 'toggle') {
+        initialToggles[item.id] = item.defaultOn ?? false;
+      }
+    });
+  });
+
   const [toggles, setToggles] = useState(initialToggles);
 
-  const flip = (id: string) => setToggles((prev) => ({ ...prev, [id]: !prev[id] }));
+  const flip = (id: string) => {
+    setToggles(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
-  const handleNav = (label: string) => Alert.alert(label, 'This section is coming soon.');
+  const handleNav = (label: string) => {
+    Alert.alert(label, 'This feature is coming soon.');
+  };
+
+  const handleSignOut = () => {
+    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Sign Out',
+        style: 'destructive',
+        onPress: async () => {
+          await supabase.auth.signOut();
+        },
+      },
+    ]);
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -75,22 +100,20 @@ export function SettingsScreen({ navigation }: Props) {
           <Text style={styles.subtitle}>Manage your preferences</Text>
         </View>
 
-        {sections.map((section) => (
+        {sections.map(section => (
           <View key={section.title} style={styles.section}>
             <Text style={styles.sectionTitle}>{section.title}</Text>
+
             <View style={styles.sectionCard}>
-              {section.items.map((item, i) => (
-                  <Pressable
-                    style={styles.signOutBtn}
-                    onPress={() => Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
-                      { text: 'Cancel', style: 'cancel' },
-                      {
-                        text: 'Sign Out',
-                        style: 'destructive',
-                        onPress: () => navigation.reset({ index: 0, routes: [{ name: 'Welcome' }] }),
-                      },
-                    ])}
-                  >
+              {section.items.map((item, index) => (
+                <View
+                  key={item.id}
+                  style={[
+                    styles.row,
+                    index !== section.items.length - 1 && styles.rowBorder,
+                  ]}
+                >
+                  {/* LEFT SIDE */}
                   <View style={styles.rowLeft}>
                     <View style={styles.iconWrap}>
                       <Ionicons name={item.icon} size={18} color={colors.navy} />
@@ -98,6 +121,7 @@ export function SettingsScreen({ navigation }: Props) {
                     <Text style={styles.rowLabel}>{item.label}</Text>
                   </View>
 
+                  {/* RIGHT SIDE */}
                   {item.type === 'toggle' && (
                     <Switch
                       value={toggles[item.id]}
@@ -106,26 +130,26 @@ export function SettingsScreen({ navigation }: Props) {
                       thumbColor={toggles[item.id] ? colors.white : colors.surface}
                     />
                   )}
+
                   {item.type === 'value' && (
                     <Text style={styles.valueText}>{item.value}</Text>
                   )}
+
                   {item.type === 'nav' && (
-                    <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+                    <Ionicons
+                      name="chevron-forward"
+                      size={18}
+                      color={colors.textMuted}
+                    />
                   )}
-                </Pressable>
+                </View>
               ))}
             </View>
           </View>
         ))}
 
-        {/* Sign out */}
-        <Pressable
-          style={styles.signOutBtn}
-          onPress={() => Alert.alert('Sign Out', 'Are you sure?', [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Sign Out', style: 'destructive' },
-          ])}
-        >
+        {/* SIGN OUT BUTTON */}
+        <Pressable style={styles.signOutBtn} onPress={handleSignOut}>
           <Ionicons name="log-out-outline" size={18} color={colors.poor} />
           <Text style={styles.signOutText}>Sign Out</Text>
         </Pressable>
@@ -147,31 +171,79 @@ const styles = StyleSheet.create({
 
   section: { marginBottom: spacing.xl },
   sectionTitle: {
-    fontSize: 12, fontWeight: '700', color: colors.textMuted,
-    textTransform: 'uppercase', letterSpacing: 1, marginBottom: spacing.sm,
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: spacing.sm,
   },
-  sectionCard: { backgroundColor: colors.surface, borderRadius: radius.md, ...shadow },
+
+  sectionCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    ...shadow,
+  },
 
   row: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: spacing.md, paddingVertical: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
   },
-  rowBorder: { borderBottomWidth: 1, borderBottomColor: colors.border },
-  rowLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+
+  rowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+
+  rowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+
   iconWrap: {
-    width: 34, height: 34, borderRadius: radius.sm,
-    backgroundColor: colors.surfaceAlt, alignItems: 'center', justifyContent: 'center',
+    width: 34,
+    height: 34,
+    borderRadius: radius.sm,
+    backgroundColor: colors.surfaceAlt,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  rowLabel: { fontSize: 15, fontWeight: '500', color: colors.text },
-  valueText: { fontSize: 14, color: colors.textMuted },
+
+  rowLabel: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: colors.text,
+  },
+
+  valueText: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
 
   signOutBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: spacing.sm, backgroundColor: colors.poorSoft,
-    borderRadius: radius.md, padding: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.poorSoft,
+    borderRadius: radius.md,
+    padding: spacing.md,
     marginBottom: spacing.lg,
   },
-  signOutText: { fontSize: 15, fontWeight: '700', color: colors.poor },
 
-  version: { textAlign: 'center', fontSize: 12, color: colors.textMuted },
+  signOutText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: colors.poor,
+  },
+
+  version: {
+    textAlign: 'center',
+    fontSize: 12,
+    color: colors.textMuted,
+  },
 });

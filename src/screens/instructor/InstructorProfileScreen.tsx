@@ -1,15 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
-import { CommonActions } from '@react-navigation/native';
+//import { CommonActions } from '@react-navigation/native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React from 'react';
+//import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { AppButton, Card, Screen, StatTile } from '../../components';
 import { courses } from '../../data/mock';
 import { colors } from '../../theme/colors';
 import { radius, spacing } from '../../theme/typography';
 import { InstructorTabParamList, RootStackParamList } from '../../navigation/types';
+import { useAuth } from '../../../task 6/backend-implementation/UseAuth';
+import { Alert } from 'react-native';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<InstructorTabParamList, 'InstructorProfile'>,
@@ -19,9 +21,33 @@ type Props = CompositeScreenProps<
 export function InstructorProfileScreen({ navigation }: Props) {
   const totalStudents = courses.reduce((n, c) => n + c.enrolledStudents, 0);
 
-  const logout = () => {
-    navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'Welcome' }] }));
-  };
+  const { signOut } = useAuth();
+
+    const logout = () => {
+      Alert.alert(
+        "Log Out",
+        "Are you sure you want to log out of your account?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Log Out",
+            style: "destructive",
+            onPress: async () => {
+              try {
+                await signOut();
+                // RootNavigator will automatically redirect to the auth flow.
+              } catch (error) {
+                console.error("Logout failed:", error);
+                Alert.alert("Error", "Unable to log out. Please try again.");
+              }
+            },
+          },
+        ]
+      );
+    };
 
   return (
     <Screen>

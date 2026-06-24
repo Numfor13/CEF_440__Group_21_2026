@@ -9,6 +9,7 @@ import { Role } from '../../data/types';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/typography';
 import { RootStackParamList } from '../../navigation/types';
+import { useAuth } from '../../../task 6/backend-implementation/UseAuth';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
@@ -18,14 +19,34 @@ export function RegisterScreen({ navigation }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  
 
-  const onRegister = () => {
-    if (role === 'student') {
-      navigation.reset({ index: 0, routes: [{ name: 'StudentTabs' }] });
-    } else {
-      navigation.reset({ index: 0, routes: [{ name: 'InstructorTabs' }] });
+  // const onRegister = () => {
+  //   if (role === 'student') {
+  //     navigation.reset({ index: 0, routes: [{ name: 'StudentTabs' }] });
+  //   } else {
+  //     navigation.reset({ index: 0, routes: [{ name: 'InstructorTabs' }] });
+  //   }
+  // };
+
+  const { signUp } = useAuth();
+
+  async function handleRegister() {
+    if (password !== confirm) {
+  alert('Passwords do not match.');
+  return;
+}
+  try {
+    await signUp({ email, password, fullName: name, role }); // role = 'student' or 'instructor'
+    alert('Check your email to confirm your account.');
+  } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message);
+      } else {
+        alert('An unexpected error occurred.');
+      }
     }
-  };
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -55,7 +76,7 @@ export function RegisterScreen({ navigation }: Props) {
           <TextField label="Password" icon="lock-closed-outline" placeholder="••••••••" secure value={password} onChangeText={setPassword} />
           <TextField label="Confirm password" icon="lock-closed-outline" placeholder="••••••••" secure value={confirm} onChangeText={setConfirm} />
 
-          <AppButton label="Create account" icon="person-add-outline" onPress={onRegister} style={{ marginTop: spacing.sm }} />
+          <AppButton label="Create account" icon="person-add-outline" onPress={handleRegister} style={{ marginTop: spacing.sm }} />
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Already have an account? </Text>

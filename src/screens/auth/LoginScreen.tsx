@@ -5,10 +5,11 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppButton, Logo, TextField } from '../../components';
 import { RoleToggle } from './RoleToggle';
-import { Role } from '../../data/types';
+//import { Role } from '../../data/types';
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/typography';
 import { RootStackParamList } from '../../navigation/types';
+import { useAuth } from '../../../task 6/backend-implementation/UseAuth';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
@@ -17,11 +18,31 @@ export function LoginScreen({ navigation }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const onLogin = () => {
-    if (role === 'student')    navigation.reset({ index: 0, routes: [{ name: 'StudentTabs' }] });
-    else if (role === 'admin') navigation.reset({ index: 0, routes: [{ name: 'AdminTabs' }] });
-    else                       navigation.reset({ index: 0, routes: [{ name: 'InstructorTabs' }] });
-  };
+  // const onLogin = () => {
+  //   if (role === 'student')    navigation.reset({ index: 0, routes: [{ name: 'StudentTabs' }] });
+  //   else if (role === 'admin') navigation.reset({ index: 0, routes: [{ name: 'AdminTabs' }] });
+  //   else                       navigation.reset({ index: 0, routes: [{ name: 'InstructorTabs' }] });
+  // };
+
+  const { signIn } = useAuth();
+
+async function handleLogin() {
+  try {
+    await signIn({ email, password });
+
+    // navigation.reset({
+    //   index: 0,
+    //   routes: [{ name: "StudentTabs" }],
+    // });
+    // Navigation happens automatically via the session listener above
+  } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message);
+      } else {
+        alert('An unexpected error occurred.');
+      }
+    }
+}
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -61,7 +82,7 @@ export function LoginScreen({ navigation }: Props) {
             <Text style={styles.forgotText}>Forgot password?</Text>
           </Pressable>
 
-          <AppButton label="Login" icon="log-in-outline" onPress={onLogin} />
+          <AppButton label="Login" icon="log-in-outline" onPress={handleLogin} />
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Don&apos;t have an account? </Text>

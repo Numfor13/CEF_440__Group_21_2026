@@ -46,7 +46,7 @@ export function DashboardScreen({ navigation }: Props) {
       <View style={styles.headerRow}>
         <View>
           <Text style={styles.greeting}>Welcome back,</Text>
-          <Text style={styles.name}>Precious 👋</Text>
+          <Text style={styles.name}>Precious </Text>
         </View>
         <Pressable style={styles.avatar} onPress={() => navigation.navigate('Profile')}>
           <Text style={styles.avatarText}>PN</Text>

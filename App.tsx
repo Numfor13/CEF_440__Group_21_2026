@@ -1,6 +1,6 @@
 import { DefaultTheme, NavigationContainer, Theme } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+//import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QoEProvider } from './src/context/QoEContext';

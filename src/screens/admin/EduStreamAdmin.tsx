@@ -16,8 +16,17 @@ import CoursesScreen from './CoursesScreen';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 //import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { AdminTabParamList } from '../../navigation/types';
+import { CompositeScreenProps } from '@react-navigation/native';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'AdminTabs'>;
+type Props = CompositeScreenProps<
+  BottomTabScreenProps<AdminTabParamList, 'AdminHome'>,
+  NativeStackScreenProps<RootStackParamList>
+>;
+
+
+// type Props = NativeStackScreenProps<RootStackParamList, 'AdminTabs'>;
 
 
 const TABS = [
